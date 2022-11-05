@@ -1,0 +1,26 @@
+React Native
+
+Installasi React Native
+1. React Native.Dev
+
+
+Component React Native
+1. Install Extensions Vs Code ES7 Snippet, Beutify, Pretier
+2. snippet rnc (class component) => (jika halaman kompleks)
+3. snippet rnf (function component)
+4. snippet rnfe (arrow function component) => (ex. button, card)
+5. snippet rncs (class component include style css inline component)
+
+
+
+React Advance
+1. React Preparation
+=> Intsall React Navigation => npm install @react-navigation/native
+=> Install Dependencies Expo managed project => npx expo install react-native-screens react-native-safe-area-context
+2. React Navigation
+=> Navigator => Stack/NavigatorStack etc. => npm install @react-navigation/stack
+=> npm install @react-navigation/bottom-tabs
+=> 
+
+
+4. Install Axios
