@@ -1,11 +1,123 @@
 import { View, Text, StyleSheet } from 'react-native';
 import * as React from 'react';
-import { Avatar, Box, Button, Heading, HStack, Stack, Icon, Input, SearchIcon, Select, VStack, Center, Image, ScrollView } from 'native-base';
+import { Avatar, Box, Button, Heading, HStack, Stack, Icon, Input, SearchIcon, Select, VStack, Center, Image, ScrollView, Pressable, FlatList } from 'native-base';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsFocused } from '@react-navigation/native';
+import { API } from '../config/API';
+
+
 import man from '../../assets/man.jpg';
 import vector from '../../assets/vector.png';
 import ceklis from '../../assets/ceklis.png';
 
-export default function ListsTodo({navigation}) {
+export default function ListsTodo({ navigation }) {
+    const [date, setDate] = React.useState();
+    const [list, setList] = React.useState([]);
+    const isFocused = useIsFocused();
+
+    const getList = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            const user_id = await AsyncStorage.getItem('user_id');
+            if (token === null) {
+                navigation.navigate("Login")
+            }
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + token
+                },
+            };
+
+            const response = await axios.get("https://api.v2.kontenbase.com/query/api/v1/0b55d1c0-775a-4d4e-88b0-e11a6249da55/List", config)
+            setList(response.data);
+            console.log(response.data);
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    React.useEffect(() => {
+        if (isFocused) {
+            getList();
+        }
+    }, [isFocused])
+
+    const _dataListRender = ({ item }) => {
+        return (
+            <Box
+                bg={"pink"}
+                marginBottom={3}
+                padding={3}
+                borderRadius={5}>
+                <Pressable style={{ flexDirection: "row", justifyContent: "space-between" }} onPress={() => navigation.navigate("DetailList")}>
+                    <VStack width={"75%"}>
+                        <Text fontWeight={"bold"} fontSize={"xl"}>{item.name}</Text>
+                        <Text>{item.description}</Text>
+                        <Text marginTop={3}>
+                            {item.date}
+                        </Text>
+                    </VStack>
+                    <VStack width={"25%"} alignItems="center">
+                        <Text
+                            width={"100%"}
+                            bg={"blue.500"}
+                            color={"white"}
+                            textAlign={"center"}
+                            borderRadius={5}
+                            p={2}
+                        >{item.category}</Text>
+                        <Text
+                            marginTop={3}
+                            width={50}
+                            height={50}
+                            bg={"grey"}
+                            borderRadius={100}
+                        ></Text>
+                    </VStack>
+                </Pressable>
+            </Box>
+            // <Box style={styles.containerCardList}>
+            //     <Pressable style={{ flexDirection: "row", justifyContent: "space-between" }} onPress={() => navigation.navigate("DetailList")}>
+            //         <HStack space={3} style={styles.titleList}>
+            //             <Text size="md" ml="-1">
+            //                 {item.name}
+            //             </Text>
+            //             <Button size="sm" variant="subtle" style={styles.buttonList} >
+            //                 <Text style={styles.TextButtonList}>{item.status}</Text>
+            //             </Button>
+            //         </HStack>
+            //         <HStack space={3} style={styles.ContentList}>
+            //             <Text fontWeight="400">
+            //                 {item.description}
+            //             </Text>
+            //             <Avatar bg="white" size="sm" source={{
+            //                 uri: ceklis
+            //             }}>US</Avatar>
+            //         </HStack>
+            //         <HStack space={3} style={styles.FooterList}>
+            //             <HStack alignItems="center">
+            //                 <Image source={{ uri: vector }} alt="vector"></Image>
+            //                 <Avatar bg="white" size="xs" source={{
+            //                     uri: vector
+            //                 }}>US</Avatar>
+            //                 <Text color="coolGray.600" _dark={{
+            //                     color: "warmGray.200"
+            //                 }} fontWeight="400">
+            //                     {item.date}
+            //                 </Text>
+            //             </HStack>
+            //         </HStack>
+            //     </Pressable>
+            // </Box>
+
+        )
+    }
+
+
+
+
     return (
         <View style={styles.container}>
             <HStack space={3} style={styles.header}>
@@ -34,102 +146,14 @@ export default function ListsTodo({navigation}) {
                     <Select.Item>Done</Select.Item>
                 </Select>
             </HStack>
-            <ScrollView>
-                <VStack space={2}>
-                    <Box style={styles.containerCardList}>
-                        <HStack space={3} style={styles.titleList}>
-                            <Text size="md" ml="-1">
-                                Study - Golang
-                            </Text>
-                            <Button size="sm" variant="subtle" style={styles.buttonList} >
-                                <Text style={styles.TextButtonList}>Study</Text>
-                            </Button>
-                        </HStack>
-                        <HStack space={3} style={styles.ContentList}>
-                            <Text fontWeight="400">
-                                Lorem ipsum dolor sit amet.
-                            </Text>
-                            <Avatar bg="white" size="sm" source={{
-                                uri: ceklis
-                            }}>US</Avatar>
-                        </HStack>
-                        <HStack space={3} style={styles.FooterList}>
-                            <HStack alignItems="center">
-                                <Image source={{ uri: vector }} alt="vector"></Image>
-                                <Avatar bg="white" size="xs" source={{
-                                    uri: vector
-                                }}>US</Avatar>
-                                <Text color="coolGray.600" _dark={{
-                                    color: "warmGray.200"
-                                }} fontWeight="400">
-                                    19 July 2022
-                                </Text>
-                            </HStack>
-                        </HStack>
-                    </Box>
-                    <Box style={styles.containerCardList}>
-                        <HStack space={3} style={styles.titleList}>
-                            <Text size="md" ml="-1">
-                                Study - Golang
-                            </Text>
-                            <Button size="sm" variant="subtle" style={styles.buttonList} >
-                                <Text style={styles.TextButtonList}>Study</Text>
-                            </Button>
-                        </HStack>
-                        <HStack space={3} style={styles.ContentList}>
-                            <Text fontWeight="400">
-                                Lorem ipsum dolor sit amet.
-                            </Text>
-                            <Avatar bg="white" size="sm" source={{
-                                uri: ceklis
-                            }}>US</Avatar>
-                        </HStack>
-                        <HStack space={3} style={styles.FooterList}>
-                            <HStack alignItems="center">
-                                <Image source={{ uri: vector }} alt="vector"></Image>
-                                <Avatar bg="white" size="xs" source={{
-                                    uri: vector
-                                }}>US</Avatar>
-                                <Text color="coolGray.600" _dark={{
-                                    color: "warmGray.200"
-                                }} fontWeight="400">
-                                    19 July 2022
-                                </Text>
-                            </HStack>
-                        </HStack>
-                    </Box>
-                    <Box style={styles.containerCardList}>
-                        <HStack space={3} style={styles.titleList}>
-                            <Text size="md" ml="-1">
-                                Study - Golang
-                            </Text>
-                            <Button size="sm" variant="subtle" style={styles.buttonList} >
-                                <Text style={styles.TextButtonList}>Study</Text>
-                            </Button>
-                        </HStack>
-                        <HStack space={3} style={styles.ContentList}>
-                            <Text fontWeight="400">
-                                Lorem ipsum dolor sit amet.
-                            </Text>
-                            <Avatar bg="white" size="sm" source={{
-                                uri: ceklis
-                            }}>US</Avatar>
-                        </HStack>
-                        <HStack space={3} style={styles.FooterList}>
-                            <HStack alignItems="center">
-                                <Image source={{ uri: vector }} alt="vector"></Image>
-                                <Avatar bg="white" size="xs" source={{
-                                    uri: vector
-                                }}>US</Avatar>
-                                <Text color="coolGray.600" _dark={{
-                                    color: "warmGray.200"
-                                }} fontWeight="400">
-                                    19 July 2022
-                                </Text>
-                            </HStack>
-                        </HStack>
-                    </Box>
-                </VStack>
+            <ScrollView
+                marginTop={10}
+                showsVerticalScrollIndicator={false}
+            >
+                <FlatList
+                    data={list}
+                    renderItem={_dataListRender}
+                    keyExtractor={(item) => item} />
             </ScrollView>
         </View>
     )

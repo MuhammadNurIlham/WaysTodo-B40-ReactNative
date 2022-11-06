@@ -11,7 +11,6 @@ import ListsTodo from './src/screen/ListsTodo';
 import AddCategory from './src/screen/AddCategory';
 import AddList from './src/screen/AddList';
 import DetailList from './src/screen/DetailList';
-import Firebase from './src/config/Firebase';
 
 // import screen
 
@@ -19,14 +18,6 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const MyTab = () => {
-    const [initializing, setInitializing] = React.useState(true);
-    const [user, setUser] = React.useState();
-
-    function authUser(user) {
-        setUser(user);
-        if (initializing) setInitializing(false);
-    }
-
     return (
         <Tab.Navigator
             initialRouteName='Home'
@@ -36,7 +27,6 @@ const MyTab = () => {
                 headerStyle: { backgroundColor: "pink" },
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName
-                    let colorName
 
                     if (route.name === "ListsTodo") {
                         iconName = focused ? "list-circle" : "list-circle-outline"

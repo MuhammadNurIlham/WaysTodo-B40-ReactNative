@@ -1,8 +1,82 @@
 import * as React from 'react'
 import { Image, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { View, Box, Center, FormControl, Heading, HStack, Input, VStack, TextArea, Select } from 'native-base';
+import { API } from '../config/API';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsFocused } from '@react-navigation/native';
+
+
 
 export default function AddList() {
+    const [dataCategory, setDataCategory] = React.useState([]);
+    const isFocused = useIsFocused();
+    const getCategory = async () => {
+        try {
+            const token = await AsyncStorage.getItem("token")
+            const user_id = await AsyncStorage.getItem("user_id");
+            setList({
+                user_id,
+                status: "pending"
+            })
+            if (token === null) {
+                navigation.navigate("Login")
+            }
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + token,
+                },
+            };
+            const response = await API.get(`/Categorys?user_id=${user_id}`, config);
+            setDataCategory(response.data)
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    // start for add list table
+    const [list, setList] = React.useState({ user_id: null, status: null });
+
+    function handleOnChange(name, value) {
+        setList({
+            ...list,
+            [name]: value,
+        });
+    };
+
+    const handleOnSubmit = async () => {
+        try {
+            const token = await AsyncStorage.getItem("token");
+
+            if (!token) {
+                navigation.navigate("Login")
+            }
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: "Bearer " + token
+                },
+            };
+            const response = await axios.post('https://api.v2.kontenbase.com/query/api/v1/0b55d1c0-775a-4d4e-88b0-e11a6249da55/List', list, config)
+            console.log("success post", response)
+            alert("Data list berhasil ditambahkan")
+            // navigation.navigate("ListsTodo")
+
+        } catch (error) {
+            console.log(error)
+            console.log("ini error list", list);
+            console.log("this error");
+            alert("Gagal menambahkan list data")
+        }
+    };
+
+    React.useEffect(() => {
+        if (isFocused) {
+            getCategory();
+        }
+    }, []);
+
     return (
         <View style={styles.container}>
             <Center w="100%" style={styles.formAddList}>
@@ -16,7 +90,9 @@ export default function AddList() {
                             <Input style={styles.input}
                                 type="text"
                                 placeholder='Name'
-                                name='name' />
+                                name='name'
+                                value={list.name}
+                                onChangeText={(value) => handleOnChange("name", value)} />
                         </FormControl>
                         <FormControl>
                             {/* <FormControl.Label>Email ID</FormControl.Label> */}
@@ -24,10 +100,13 @@ export default function AddList() {
                                 type="email"
                                 placeholder='Email'
                                 name='email' /> */}
-                            <Select placeholder='Category' style={styles.input}>
-                                <Select.Item>One</Select.Item>
-                                <Select.Item>Two</Select.Item>
-                                <Select.Item>Three</Select.Item>
+                            <Select
+                                placeholder='Category'
+                                style={styles.input}
+                                onValueChange={(value) => handleOnChange("category", value)}>
+                                {dataCategory?.map((item) => (
+                                    <Select.Item label={item?.name} value={item?.name} />
+                                ))}
                             </Select>
                         </FormControl>
                         <FormControl>
@@ -35,16 +114,22 @@ export default function AddList() {
                             <Input style={styles.input}
                                 type="text"
                                 placeholder='Choose Date (masih belum kelar)'
-                                name='date' />
+                                value={list.date}
+                                name="date"
+                                onChangeText={(value) => handleOnChange("date", value)} />
                         </FormControl>
                         <FormControl>
                             {/* <FormControl.Label>Password</FormControl.Label> */}
                             <TextArea style={styles.input}
                                 type="text"
                                 placeholder='Description'
-                                name='description' />
+                                name='description'
+                                value={list.description}
+                                onChangeText={(value) => handleOnChange("description", value)} />
                         </FormControl>
-                        <TouchableOpacity style={styles.customButtonLogin}>
+                        <TouchableOpacity
+                            style={styles.customButtonLogin}
+                            onPress={handleOnSubmit} >
                             <Text style={styles.textButton}>Add List</Text>
                         </TouchableOpacity>
                     </VStack>

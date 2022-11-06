@@ -2,8 +2,31 @@ import * as React from 'react'
 import { Image, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { View, Box, Center, FormControl, Heading, HStack, Input, VStack } from 'native-base';
 import LoginIcon from '../../assets/LoginIcon.png';
+import { API } from '../config/API';
 
-export default function Register() {
+export default function Register({ navigation }) {
+    const [form, setForm] = React.useState("")
+
+    function handleOnChange(name, value) {
+        setForm({
+            ...form,
+            [name]: value,
+        });
+    };
+
+    const handleOnSubmit = async () => {
+        try {
+            const response = await API.post("/auth/register", form);
+            console.log(response);
+            alert(`Selamat ${response.data.user.firstName} kamu berhasil mendaftar`);
+            navigation.navigate("Login")
+        } catch (e) {
+            console.log(e, "this error")
+            alert("Yahhh Gagal Mendaftar")
+        }
+    };
+
+
     return (
         <View style={styles.container}>
             <Image source={LoginIcon} alt="IconPage" style={{
@@ -21,23 +44,30 @@ export default function Register() {
                         <FormControl>
                             {/* <FormControl.Label>Email ID</FormControl.Label> */}
                             <Input style={styles.input}
-                                type="email"
                                 placeholder='Email'
-                                name='email' />
+                                keyboardType={"email-address"}
+                                value={form.email}
+                                name='email'
+                                onChangeText={(value) => handleOnChange("email", value)} />
                         </FormControl>
                         <FormControl>
                             {/* <FormControl.Label>Email ID</FormControl.Label> */}
                             <Input style={styles.input}
                                 type="text"
                                 placeholder='Name'
-                                name='name' />
+                                value={form.firstName}
+                                name='firstName'
+                                onChangeText={(value) => handleOnChange("firstName", value)} />
                         </FormControl>
                         <FormControl>
                             {/* <FormControl.Label>Password</FormControl.Label> */}
                             <Input style={styles.input}
                                 type="password"
                                 placeholder='Password'
-                                name='password' />
+                                value={form.password}
+                                name='password'
+                                secureTextEntry={true}
+                                onChangeText={(value) => handleOnChange("password", value)} />
                             {/* <Link _text={{
                             fontSize: xs                            fontWeight: "500",
                             color: "indigo.500"
@@ -45,7 +75,9 @@ export default function Register() {
                             Forget Password?
                         </Link> */}
                         </FormControl>
-                        <TouchableOpacity style={styles.customButtonLogin}>
+                        <TouchableOpacity
+                            style={styles.customButtonLogin}
+                            onPress={handleOnSubmit} >
                             <Text style={styles.textButton}>Register</Text>
                         </TouchableOpacity>
                         <HStack mt="6" justifyContent="center">

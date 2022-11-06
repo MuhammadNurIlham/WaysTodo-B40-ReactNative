@@ -1,8 +1,102 @@
 import * as React from 'react'
 import { Image, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { View, Box, Center, FormControl, Heading, HStack, Input, VStack, Stack, Button } from 'native-base';
+import { View, Box, Center, FormControl, Heading, HStack, Input, VStack, Stack, Button, FlatList } from 'native-base';
+import { API } from '../config/API';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function AddCategory() {
+
+    const isFocused = useIsFocused();
+    const [category, setCategory] = React.useState({ user_id: null })
+    const [dataCategory, setDataCategory] = React.useState([])
+    console.log(category);
+
+    function handleOnChange(name, value) {
+        setCategory({
+            ...category,
+            [name]: value,
+        });
+    };
+
+    const handleOnSubmit = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            const user_id = await AsyncStorage.getItem('user_id')
+            setCategory({
+                user_id
+            })
+            console.log("ini tokennya", token)
+            console.log("ini user id nya", user_id)
+            if (!token) {
+                navigation.navigate("Login");
+            }
+            const config = {
+                headers: {
+                    'Content-type': 'application/json',
+                    Authorization: 'Bearer ' + token
+                },
+            };
+            const response = await axios.post("https://api.v2.kontenbase.com/query/api/v1/0b55d1c0-775a-4d4e-88b0-e11a6249da55/Category", category, config);
+            alert(`Category anda berhasil ditambahkan`);
+            getCategory();
+            console.log(response.data)
+            console.log(category);
+        } catch (e) {
+            console.log(e);
+            console.log("ini errornya");
+            alert("Gagal menambahkan category");
+        }
+    };
+
+    const getCategory = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            const user_id = await AsyncStorage.getItem('user_id');
+            setCategory({
+                user_id
+            })
+            console.log("ini token get category", token)
+            console.log("ini user_id get category", user_id)
+            if (token === null) {
+                navigation.navigate("Login")
+            }
+            const config = {
+                headers: {
+                    'Content-type': 'application/json',
+                    Authorization: 'Bearer ' + token
+                },
+            };
+            const response = await API.get(`/Categorys?user_id=${user_id}`, config);
+            setDataCategory(response.data)
+        } catch (error) {
+            console.log("ini error getCategory");
+            console.log(error);
+        };
+    }
+
+    React.useEffect(() => {
+        if (isFocused) {
+            getCategory()
+        }
+    }, [isFocused])
+
+    const _dataCategoryRender = ({ item }) => {
+        return (
+            <View style={{ margin: 20, backgroundColor: "red", color: "white" }}>
+                <Stack mb="2.5" mt="1.5" direction={{
+                    base: "row",
+                    sm: "row"
+                }} space={1}>
+                    <Button size="sm" variant="subtle" style={styles.buttonList}>
+                        {item.name}
+                    </Button>
+                </Stack>
+            </View>
+        );
+    };
+
     return (
         <View style={styles.container}>
             <Center w="100%" style={styles.formAddCategory}>
@@ -16,9 +110,13 @@ export default function AddCategory() {
                             <Input style={styles.input}
                                 type="text"
                                 placeholder='Name'
-                                name='name' />
+                                name='name'
+                                value={category.name}
+                                onChangeText={(value) => handleOnChange("name", value)} />
                         </FormControl>
-                        <TouchableOpacity style={styles.customButtonAddCategory}>
+                        <TouchableOpacity
+                            style={styles.customButtonAddCategory}
+                            onPress={handleOnSubmit} >
                             <Text style={styles.textButton}>Add Category</Text>
                         </TouchableOpacity>
                     </VStack>
@@ -28,7 +126,30 @@ export default function AddCategory() {
                     {
                         /* Subtle */
                     }
-                    <Stack mb="2.5" mt="1.5" direction={{
+                    {/* <Box>
+                        <FlatList
+                            w="full"
+                            space={2}
+                            mt="6"
+                            data={data}
+                            key={(item) => item.index}
+                            renderItem={({ item }) => (
+                                <Button size="sm" variant="subtle">
+                                    {item.name}
+                                </Button>
+                            )}
+                        />
+                    </Box> */}
+                    <Text style={{ marginTop: 20, marginRight: 100 }}>
+
+                        <FlatList
+                            numColumns={3}
+                            data={dataCategory}
+                            renderItem={_dataCategoryRender}
+                            keyExtractor={(item) => item}
+                        />
+                    </Text>
+                    {/* <Stack mb="2.5" mt="1.5" direction={{
                         base: "row",
                         sm: "row"
                     }} space={1}>
@@ -41,7 +162,7 @@ export default function AddCategory() {
                         <Button size="sm" variant="subtle" colorScheme="warning" style={styles.buttonList}>
                             Workout
                         </Button>
-                    </Stack>
+                    </Stack> */}
                 </Box>
             </Center>
         </View>

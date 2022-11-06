@@ -2,8 +2,71 @@ import * as React from 'react'
 import { TouchableOpacity, Text, StyleSheet, Image } from 'react-native';
 import { View, Box, Center, FormControl, Heading, HStack, Input, Link, VStack } from 'native-base';
 import LoginIcon from '../../assets/LoginIcon.png';
+import API from '../config/API';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 export default function Login({ navigation }) {
+    const [form, setForm] = React.useState({
+        email: "",
+        password: "",
+    });
+    console.log("this is form", form);
+
+    function handleOnChange(name, value) {
+        setForm({
+            ...form,
+            [name]: value,
+        });
+    };
+
+    const handleOnSubmit = async () => {
+        try {
+            const config = {
+                headers: {
+                    'Content-type': 'application/json',
+                },
+            };
+            console.log(config)
+
+            const body = JSON.stringify(form);
+            const response = await axios.post("https://api.v2.kontenbase.com/query/api/v1/0b55d1c0-775a-4d4e-88b0-e11a6249da55/auth/login", body, config);
+            console.log(body)
+            console.log(response)
+
+            if (response) {
+                await AsyncStorage.setItem('token', response.data.token);
+                await AsyncStorage.setItem("user_id", response.data.user._id);
+            }
+
+            const value = await AsyncStorage.getItem("token");
+            if (value !== null) {
+                console.log("ini value tokennya", value);
+                navigation.navigate("ListsTodo")
+                alert(`Selamat ${response.data.user.firstName} kamu berhasil Login`)
+            }
+
+            // if (response) {
+            //     await AsyncStorage.setItem('token', response.data.token);
+            //     await AsyncStorage.setItem("user_id", response.data.user._id);
+            // }
+
+            // const token = await AsyncStorage.getItem('token');
+            // if (token !== null) {
+            //     console.log(response.data.user.firstName);
+            //     console.log(token);
+            //     navigation.navigate("ListsTodo")
+            //     alert(`Selamat ${response.data.user.firstName} kamu berhasil Login`);
+            // }
+        } catch (error) {
+            console.log(error);
+            console.log("Ada yang salah");
+            alert(error.response.data.message)
+            alert("Salah email atau password");
+        }
+    };
+
+
     return (
         <View style={styles.container}>
             <Image source={LoginIcon} alt="IconPage" style={{
@@ -22,15 +85,20 @@ export default function Login({ navigation }) {
                             {/* <FormControl.Label>Email ID</FormControl.Label> */}
                             <Input style={styles.input}
                                 type="email"
+                                keyboardType={"email"}
                                 placeholder='Email'
-                                name='email' />
+                                name='email'
+                                onChangeText={(value) => handleOnChange("email", value)}
+                                value={form.email} />
                         </FormControl>
                         <FormControl>
                             {/* <FormControl.Label>Password</FormControl.Label> */}
                             <Input style={styles.input}
                                 type="password"
                                 placeholder='Password'
-                                name='password' />
+                                name='password'
+                                onChangeText={(value) => handleOnChange("password", value)}
+                                value={form.password} />
                             {/* <Link _text={{
                             fontSize: "xs",
                             fontWeight: "500",
@@ -39,7 +107,7 @@ export default function Login({ navigation }) {
                             Forget Password?
                         </Link> */}
                         </FormControl>
-                        <TouchableOpacity style={styles.customButtonLogin} onPress={() => navigation.navigate("ListsTodo")}>
+                        <TouchableOpacity style={styles.customButtonLogin} onPress={handleOnSubmit}>
                             <Text style={styles.textButton}>Login</Text>
                         </TouchableOpacity>
                         <HStack mt="6" justifyContent="center">
