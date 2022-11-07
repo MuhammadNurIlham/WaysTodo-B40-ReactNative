@@ -84,7 +84,7 @@ export default function AddCategory() {
 
     const _dataCategoryRender = ({ item }) => {
         return (
-            <View style={{ margin: 20, backgroundColor: "red", color: "white" }}>
+            <View style={{ margin: 20, color: "white" }}>
                 <Stack mb="2.5" mt="1.5" direction={{
                     base: "row",
                     sm: "row"

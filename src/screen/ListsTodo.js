@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
 import * as React from 'react';
-import { Avatar, Box, Button, Heading, HStack, Stack, Icon, Input, SearchIcon, Select, VStack, Center, Image, ScrollView, Pressable, FlatList } from 'native-base';
+import { Avatar, Box, Button, Heading, HStack, Stack, Icon, Input, SearchIcon, Select, VStack, Center, Image, ScrollView, Pressable, FlatList, Flex } from 'native-base';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
@@ -47,7 +47,7 @@ export default function ListsTodo({ navigation }) {
     const _dataListRender = ({ item }) => {
         return (
             <Box
-                bg={"pink"}
+                bg="blueGray.300"
                 marginBottom={3}
                 padding={3}
                 borderRadius={5}>
@@ -62,7 +62,7 @@ export default function ListsTodo({ navigation }) {
                     <VStack width={"25%"} alignItems="center">
                         <Text
                             width={"100%"}
-                            bg={"blue.500"}
+                            bg="blue.500"
                             color={"white"}
                             textAlign={"center"}
                             borderRadius={5}
@@ -72,7 +72,7 @@ export default function ListsTodo({ navigation }) {
                             marginTop={3}
                             width={50}
                             height={50}
-                            bg={"grey"}
+                            bg="grey.300"
                             borderRadius={100}
                         ></Text>
                     </VStack>
@@ -134,13 +134,13 @@ export default function ListsTodo({ navigation }) {
                 <Input placeholder="Search List..." variant="filled" width="100%" borderRadius="10" py="3" px="2" InputLeftElement={<Icon ml="2" size="4" color="green.400" as={<SearchIcon />} />} />
             </VStack>
             <HStack space={1} style={styles.InputSelect}>
-                <Input h="10" w="20" bg="primary.300" rounded="md" shadow={3} />
-                <Select h="10" w="20" bg="primary.500" rounded="md" shadow={3} placeholder="Category" >
+                <Input h="10" w="20" bg="gray.200" rounded="md" shadow={3} placeholder="Date" placeholderTextColor="dark.300" />
+                <Select h="10" w="20" bg="gray.200" rounded="md" shadow={3} placeholder="Category" placeholderTextColor="dark.300" >
                     <Select.Item>Study</Select.Item>
                     <Select.Item>Homework</Select.Item>
                     <Select.Item>Workout</Select.Item>
                 </Select>
-                <Select h="10" w="20" bg="primary.500" rounded="md" shadow={3} placeholder="Status" >
+                <Select h="10" w="20" bg="gray.200" rounded="md" shadow={3} placeholder="Status" placeholderTextColor="dark.300" >
                     <Select.Item>Todo</Select.Item>
                     <Select.Item>Doing</Select.Item>
                     <Select.Item>Done</Select.Item>
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     InputSelect: {
         paddingTop: "20px",
         paddingBottom: "20px",
-        justifyContent: "space-between"
+        justifyContent: "space-between",
     },
     search: {
         paddingBottom: "20px"

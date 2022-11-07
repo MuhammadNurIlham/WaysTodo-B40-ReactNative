@@ -29,11 +29,13 @@ export default function Register({ navigation }) {
 
     return (
         <View style={styles.container}>
-            <Image source={LoginIcon} alt="IconPage" style={{
-                width: "256px",
-                height: "184px",
-                resizeMode: "cover"
-            }} />
+            <Center>
+                <Image source={LoginIcon} alt="IconPage" style={{
+                    width: "256px",
+                    height: "184px",
+                    resizeMode: "cover"
+                }} />
+            </Center>
             <Center w="100%" style={styles.formLogin}>
                 <Box safeArea p="2" py="8" w="90%" maxW="290">
                     <Heading size="lg" style={styles.textLogin}>
@@ -80,7 +82,7 @@ export default function Register({ navigation }) {
                             onPress={handleOnSubmit} >
                             <Text style={styles.textButton}>Register</Text>
                         </TouchableOpacity>
-                        <HStack mt="6" justifyContent="center">
+                        <HStack mt="3" justifyContent="center">
                             <Text style={styles.teks}>
                                 Joined as before?{" "}
                             </Text>
